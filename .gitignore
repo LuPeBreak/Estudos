@@ -1,3 +1,4 @@
+
 # OSX
 #
 .DS_Store
@@ -60,3 +61,7 @@ buck-out/
 
 #typescript
 dist/
+
+#tmp
+tmp/*
+!tmp/.gitkeep
