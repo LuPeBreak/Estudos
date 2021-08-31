@@ -63,5 +63,4 @@ buck-out/
 dist/
 
 #tmp
-tmp/*
-!tmp/.gitkeep
+tmp
