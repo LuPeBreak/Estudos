@@ -6,6 +6,9 @@ import { sign } from 'jsonwebtoken';
 // configs
 import authConfig from '../config/auth';
 
+// Errors
+import AppError from '../errors/AppErrors';
+
 // model
 import User from '../models/Users';
 
@@ -28,13 +31,13 @@ class AuthenticateUserService {
     });
 
     if (!user) {
-      throw new Error('Invalid Email/Password combination');
+      throw new AppError('Invalid Email/Password combination', 401);
     }
 
     const validateUserPassword = await compare(password, user.password);
 
     if (!validateUserPassword) {
-      throw new Error('Invalid Email/Password combination');
+      throw new AppError('Invalid Email/Password combination', 401);
     }
 
     const token = sign({}, authConfig.jwt.secret, {

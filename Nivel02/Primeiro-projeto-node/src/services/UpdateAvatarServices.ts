@@ -2,10 +2,12 @@
 import { getRepository } from 'typeorm';
 import path from 'path';
 import fs from 'fs';
-// models
-import User from '../models/Users';
 // configs
 import uploadsConfig from '../config/uploads';
+// Errors
+import AppError from '../errors/AppErrors';
+// models
+import User from '../models/Users';
 
 interface Request {
   user_id: string;
@@ -21,7 +23,7 @@ class UpdateAvatarService {
 
     // verifica se o usuario esta autenticado
     if (!user) {
-      throw new Error('Only autenticated users can change avatar');
+      throw new AppError('Only autenticated users can change avatar');
     }
 
     // verifica se ja existe um avatar se sim ele deleta o avatar antigo
