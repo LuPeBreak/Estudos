@@ -36,20 +36,16 @@ usersRouter.patch(
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    try {
-      const updateAvatar = new UpdateAvatarService();
+    const updateAvatar = new UpdateAvatarService();
 
-      const user = await updateAvatar.execute({
-        user_id: request.user.id,
-        avatarFileName: request.file.filename,
-      });
+    const user = await updateAvatar.execute({
+      user_id: request.user.id,
+      avatarFileName: request.file.filename,
+    });
 
-      delete user.password;
+    delete user.password;
 
-      return response.json(user);
-    } catch (err) {
-      return response.status(err.statusCode).json({ error: err.message });
-    }
+    return response.json(user);
   },
 );
 
