@@ -11,20 +11,21 @@ import api from '../../services/api';
 import logo from '../../assets/logo.svg';
 
 // styles
-import { Title, Form, Repositories } from './styles';
+import { Title, Form, Repositories, Error } from './styles';
 
 // interfaces
 interface Repository {
   full_name: string;
   description: string;
   owner: {
-    loging: string;
+    login: string;
     avatar_url: string;
   };
 }
 
 const Dashboard: React.FC = () => {
   const [newRepo, setNewRepo] = useState('');
+  const [inputError, setInputError] = useState('');
   const [repositories, setRepositories] = useState<Repository[]>([]);
 
   async function handleAddRepository(
@@ -32,18 +33,29 @@ const Dashboard: React.FC = () => {
   ): Promise<void> {
     event.preventDefault();
 
-    const response = await api.get<Repository>(`repos/${newRepo}`);
+    if (!newRepo) {
+      setInputError('digite o autor/nome do repositorio');
+      return;
+    }
 
-    const repository = response.data;
+    try {
+      const response = await api.get<Repository>(`repos/${newRepo}`);
 
-    setRepositories([...repositories, repository]);
+      const repository = response.data;
+
+      setRepositories([...repositories, repository]);
+      setNewRepo('');
+      setInputError('');
+    } catch (error) {
+      setInputError('error na busca por esse repositorio');
+    }
   }
 
   return (
     <>
       <img src={logo} alt="Github Explorer" />
       <Title>Explore repositorios no github</Title>
-      <Form onSubmit={handleAddRepository}>
+      <Form hasError={!!inputError} onSubmit={handleAddRepository}>
         <input
           value={newRepo}
           onChange={e => setNewRepo(e.target.value)}
@@ -52,18 +64,22 @@ const Dashboard: React.FC = () => {
         <button type="submit">Pesquisar</button>
       </Form>
 
+      {inputError && <Error>{inputError}</Error>}
+
       <Repositories>
-        <a href="teste">
-          <img
-            src="https://avatars.githubusercontent.com/u/21126750?v=4"
-            alt="Lupebreak"
-          />
-          <div>
-            <strong>LuPeBreak/Estudos</strong>
-            <p>Repositorio para salvar estudos do curso Gostack</p>
-          </div>
-          <FiChevronRight size={20} />
-        </a>
+        {repositories.map(repository => (
+          <a key={repository.full_name} href="teste">
+            <img
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
+            <div>
+              <strong>{repository.full_name}</strong>
+              <p>{repository.description}</p>
+            </div>
+            <FiChevronRight size={20} />
+          </a>
+        ))}
       </Repositories>
     </>
   );
